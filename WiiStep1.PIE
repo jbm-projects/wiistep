@@ -1,0 +1,183 @@
+
+if var.initiate=0
+  //MIDI defaults
+  midi.DeviceOut=midi.yoke1.deviceout
+  midi.DefaultChannel=1
+  var.initiate=1
+endif
+
+//Short rumble for feedback
+var.short=50
+var.long=150
+
+//Banks (Between 1-4)
+var.banks=8
+
+if var.banks > 16 then var.banks=16
+if var.banks < 1 then var.banks=1
+
+//Next / Previous Bank
+//if pressed(key.equals)
+if pressed(wiimote.Plus)
+  if var.bank < var.banks-1 then var.bank = var.bank + 1 else var.bank = 0
+  wiimote.Rumble=1
+  if var.bank > 0 then wait var.short ms else wait var.long ms
+  wiimote.rumble=0
+endif
+
+//if pressed(key.minus)
+if pressed(wiimote.Minus)
+  if var.bank > 0 then var.bank = var.bank - 1 else var.bank = var.banks-1
+  wiimote.Rumble=1
+  if var.bank > 0 then wait var.short ms else wait var.long ms
+  wiimote.rumble=0
+endif
+
+//Pressing Home goes to the first Bank
+//if pressed(key.h)
+if pressed(wiimote.Home)
+  var.bank = 0
+  wiimote.Rumble=1
+  wait var.long ms
+  wiimote.Rumble=0
+endif
+
+/* Unfortunately not working right yet
+//Ports (Between 1-4)
+var.ports=4
+
+if var.ports > 4 then var.ports=4
+if var.ports < 1 then var.ports=1
+
+//Next / Previous Port
+if pressed(wiimote.Two)
+  if var.port < var.ports-1 then var.port = var.port + 1 else var.port = 0
+  wiimote.Rumble=1
+  if var.port > 0 then wait var.short ms else wait var.long ms
+  wiimote.rumble=0
+endif
+
+if pressed(wiimote.One)
+  if var.port > 0 then var.port = var.port - 1 else var.port = var.ports-1
+  wiimote.Rumble=1
+  if var.port > 0 then wait var.short ms else wait var.long ms
+  wiimote.rumble=0
+endif
+
+//Set MIDI port / channel
+
+if var.port=0 then midi.DeviceOut=midi.yoke1.deviceout
+if var.port=1 then midi.DeviceOut=midi.yoke2.deviceout
+if var.port=2 then midi.DeviceOut=midi.yoke3.deviceout
+if var.port=3 then midi.DeviceOut=midi.yoke4.deviceout
+
+debug=var.port
+*/
+
+midi.defaultchannel=var.bank+1
+
+//Switches
+
+if var.mmute=0
+
+if pressed(Wiimote.left)
+//if pressed (key.1)
+  if midi.control1=0 then midi.control1=1 else midi.control1=0
+endif
+
+if pressed(Wiimote.up)
+//if pressed(key.2)
+  if midi.control2=0 then midi.control2=1 else midi.control2=0
+endif
+
+if pressed(Wiimote.down)
+//if pressed(key.3)
+  if midi.control3=0 then midi.control3=1 else midi.control3=0
+endif
+
+if pressed(Wiimote.right)
+//if pressed(key.4)
+  if midi.control4=0 then midi.control4=1 else midi.control4=0
+endif
+
+endif
+
+if wiimote.B=1
+  var.mmute=1
+  if pressed(Wiimote.left)
+    if midi.yoke1.Channel1.control112=0 then midi.yoke1.Channel1.control112=1 else midi.yoke1.Channel1.control112=0
+  endif
+  if pressed(Wiimote.up)
+    if midi.yoke1.Channel1.control113=0 then midi.yoke1.Channel1.control113=1 else midi.yoke1.Channel1.control113=0
+  endif
+  if pressed(Wiimote.down)
+    if midi.yoke1.Channel1.control114=0 then midi.yoke1.Channel1.control114=1 else midi.yoke1.Channel1.control114=0
+  endif
+  if pressed(Wiimote.right)
+    if midi.yoke1.Channel1.control115=0 then midi.yoke1.Channel1.control115=1 else midi.yoke1.Channel1.control115=0
+  endif
+else
+  var.mmute=0
+endif
+
+//debug= var.bank + 1 + ' banks=' + var.banks + ' cc=' + var.cc + ' b1 o=' + var.b1o + ' b2 o=' + var.b2o + ' b1 i=' + var.b1i + ' b2 i=' + var.b2i + var.a1 + var.a2
+//debug= 'b1 out=' + var.b1o + ' b2 out=' + var.b2o + ' b1 in=' + var.b1i + ' b2 in=' + var.b2i + ' A1=' + var.a1 + ' A2=' + var.a2
+//debug=midi.control119
+
+//Visual feedback to LEDs
+
+if var.mmute=0
+
+  wiimote.Led1=midi.control1
+  wiimote.led2=midi.control2
+  wiimote.Led3=midi.control3
+  wiimote.led4=midi.control4
+
+//BPM Ticker (requires external MIDI from specific CC#s)
+
+ if var.whenledstepworks=0
+    if midi.control116=1
+      if midi.control1=1
+        wiimote.led1=0
+      else
+        wiimote.Led1=1
+      endif
+    endif
+    if midi.control117=1
+      if midi.control2=1
+        wiimote.led2=0
+      else
+        wiimote.Led2=1
+      endif
+    endif
+    if midi.control118=1
+      if midi.control3=1
+        wiimote.led3=0
+      else
+        wiimote.Led3=1
+      endif
+    endif
+    if midi.control119=1
+      if midi.control4=1
+        wiimote.led4=0
+      else
+        wiimote.Led4=1
+      endif
+    endif
+    wait 1ms
+  endif//Led Steps
+
+else//B is pressed
+
+  wiimote.led1=midi.yoke1.Channel1.control112
+  wiimote.led2=midi.yoke1.Channel1.control113
+  wiimote.led3=midi.yoke1.Channel1.control114
+  wiimote.led4=midi.yoke1.Channel1.control115
+
+endif//
+
+endif
+
+
+
+

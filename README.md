@@ -2,7 +2,7 @@
 4 step sequencer using a WiiMote (works with Ableton)
 
 WiiStep by JBM
-version 1
+version 1 created April 2008
 
 What you need installed:
 
